@@ -45,7 +45,8 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     ChatDlg             ( parent ),
     ConnectDlg          ( pNSetP, bNewShowComplRegConnList, parent ),
     AnalyzerConsole     ( pNCliP, parent ),
-    MusicianProfileDlg  ( pNCliP, parent )
+    MusicianProfileDlg  ( pNCliP, parent ),
+    ConnectionListDlg( parent )
 {
     setupUi ( this );
 
@@ -347,6 +348,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     pMenu->addMenu ( pFileMenu );
     pMenu->addMenu ( pViewMenu );
     pMenu->addMenu ( pEditMenu );
+    pMenu->addMenu ( ConnectionListDlg.setupMenu(this) );
     pMenu->addMenu ( new CHelpMenu ( true, this ) );
 
     // Now tell the layout about the menu
@@ -550,6 +552,7 @@ CClientDlg::CClientDlg ( CClient*         pNCliP,
     QObject::connect ( &ConnectDlg, &CConnectDlg::accepted,
         this, &CClientDlg::OnConnectDlgAccepted );
 
+    QObject::connect ( &ConnectionListDlg, &CConnectionListDlg::ConnectionListDlgUpdated, this, &CClientDlg::OnConnectionListDlgUpdated );
 
     // Initializations which have to be done after the signals are connected ---
     // start timer for status bar
@@ -606,6 +609,7 @@ void CClientDlg::closeEvent ( QCloseEvent* Event )
     ChatDlg.close();
     MusicianProfileDlg.close();
     ConnectDlg.close();
+    ConnectionListDlg.close();
     AnalyzerConsole.close();
 
     // if connected, terminate connection
@@ -717,6 +721,24 @@ void CClientDlg::OnAudioPanValueChanged ( int value )
 {
     pClient->SetAudioInFader ( value );
     UpdateAudioFaderSlider();
+}
+void CClientDlg::OnConnectionListDlgUpdated()
+{
+        // get the address from the ConnectionListDlg dialog
+        QString strSelectedAddress = ConnectionListDlg.getSelectedAddress();
+
+        // get name to be set in audio mixer group box title
+        QString strMixerBoardLabel = ConnectionListDlg.getSelectedName();
+
+        // first check if we are already connected, if this is the case we have to
+        // disconnect the old server first
+        if ( pClient->IsRunning() )
+        {
+            Disconnect();
+        }
+
+        // initiate connection
+        Connect ( strSelectedAddress, strMixerBoardLabel );
 }
 
 void CClientDlg::OnConnectDlgAccepted()
@@ -1236,10 +1258,10 @@ void CClientDlg::Connect ( const QString& strSelectedAddress,
 
         // change connect button text to "disconnect"
         butConnect->setText ( tr ( "D&isconnect" ) );
-
+        butConnect->repaint();
         // set server name in audio mixer group box title
         MainMixerBoard->SetServerName ( strMixerBoardLabel );
-
+        ConnectionListDlg.setCurrentServer(strMixerBoardLabel, strSelectedAddress);
         // start timer for level meter bar and ping time measurement
         TimerSigMet.start             ( LEVELMETER_UPDATE_TIME_MS );
         TimerBuffersLED.start         ( BUFFER_LED_UPDATE_TIME_MS );

@@ -1592,7 +1592,7 @@
         <location filename="../../clientsettingsdlgbase.ui" line="482"/>
         <source>Custom Central Server Address:</source>
         <translation>Adresse personnalisée du serveur central : </translation>
-    </message>
+        </message>
     <message>
         <location filename="../../clientsettingsdlgbase.ui" line="511"/>
         <source>Audio Stream Rate</source>

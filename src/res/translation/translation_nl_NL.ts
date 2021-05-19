@@ -239,7 +239,7 @@
         <location filename="../../audiomixerboard.cpp" line="244"/>
         <location filename="../../audiomixerboard.cpp" line="260"/>
         <source>Pan</source>
-        <translation>Balans</translation>
+        <translation>Bal.</translation>
     </message>
     <message>
         <location filename="../../audiomixerboard.cpp" line="47"/>
