@@ -1286,7 +1286,7 @@ void CClientDlg::Disconnect()
 
     // reset server name in audio mixer group box title
     MainMixerBoard->SetServerName ( "" );
-
+    ConnectionListDlg.setCurrentServer("", "");
     // stop timer for level meter bars and reset them
     TimerSigMet.stop();
     lbrInputLevelL->setEnabled ( false );

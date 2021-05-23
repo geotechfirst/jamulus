@@ -24,6 +24,8 @@ QMenu* CConnectionListDlg::setupMenu(QWidget* pMain)
     QMenu* pBookmarkMenu = new QMenu ( tr ( "&Bookmarks" ), pMain );
     pBookmarkMenu->addAction ( tr ( "&Add Bookmark" ), this,
     +         SLOT ( OnAddBookmark() ) );
+    pBookmarkMenu->addAction ( tr ( "&Remove Bookmark" ), this,
+    +         SLOT ( OnRemoveBookmark() ) );
     pBookmarkMenu->addSeparator();
     pBookmarkMenu->addAction ( tr ( "&Load Bookmarks..." ), this,
     +         SLOT ( OnLoadBookmarks() ) );
@@ -82,6 +84,10 @@ void CConnectionListDlg::SaveConnectionList(const QString& filename)
 }
 void CConnectionListDlg::OnAddBookmark()
 {
+    if (strCurrentServerName.isEmpty())
+    {
+        return;
+    }
     NetworkUtil networkUtil;
     CHostAddress address;
     networkUtil.ParseNetworkAddress(strCurrentServerAddress,address);
@@ -96,6 +102,17 @@ void CConnectionListDlg::OnAddBookmark()
                       false ) );
     ui->listWidget->addItem(strCurrentServerName);
     show();
+}
+void CConnectionListDlg::OnRemoveBookmark()
+{
+    if (vecServerInfo.size() > 0)
+    {
+        vecServerInfo.erase(vecServerInfo.begin()+ulSelectedServer);
+        ui->listWidget->clear();
+        for (int var = 0; var < vecServerInfo.size() ; ++var) {
+           ui->listWidget->addItem(vecServerInfo[var].strName) ;
+        }
+    }
 }
 void CConnectionListDlg::OnLoadBookmarks()
 {

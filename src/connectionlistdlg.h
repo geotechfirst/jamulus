@@ -33,6 +33,7 @@ private slots:
 
 public slots:
     void OnAddBookmark();
+    void OnRemoveBookmark();
     void OnLoadBookmarks();
     void OnSaveBookmarks();
 signals:
