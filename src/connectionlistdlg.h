@@ -38,11 +38,13 @@ public slots:
     void OnSaveBookmarks();
 signals:
     void ConnectionListDlgUpdated() ;
-
+protected:
+    void virtual closeEvent(QCloseEvent* e);
 private:
     Ui::CConnectionListDlg *ui;
     CVector<CServerInfo> vecServerInfo ;
     unsigned long ulSelectedServer;
     QString strCurrentServerName;
     QString strCurrentServerAddress;
+    bool bDirty;
 };

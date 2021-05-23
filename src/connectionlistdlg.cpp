@@ -10,7 +10,8 @@ CConnectionListDlg::CConnectionListDlg(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CConnectionListDlg),
     vecServerInfo(0),
-    ulSelectedServer(0)
+    ulSelectedServer(0),
+    bDirty(false)
 {
     ui->setupUi(this);
 }
@@ -81,6 +82,7 @@ void CConnectionListDlg::SaveConnectionList(const QString& filename)
         << vecServerInfo[var].HostAddr.toString() << endl;
     }
     file.close();
+    bDirty = false;
 }
 void CConnectionListDlg::OnAddBookmark()
 {
@@ -101,6 +103,7 @@ void CConnectionListDlg::OnAddBookmark()
                       0,
                       false ) );
     ui->listWidget->addItem(strCurrentServerName);
+    bDirty = true;
     show();
 }
 void CConnectionListDlg::OnRemoveBookmark()
@@ -112,6 +115,7 @@ void CConnectionListDlg::OnRemoveBookmark()
         for (int var = 0; var < vecServerInfo.size() ; ++var) {
            ui->listWidget->addItem(vecServerInfo[var].strName) ;
         }
+        bDirty = true;
     }
 }
 void CConnectionListDlg::OnLoadBookmarks()
@@ -179,4 +183,14 @@ void CConnectionListDlg::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 {
     emit ConnectionListDlgUpdated();
 }
-
+void CConnectionListDlg::closeEvent(QCloseEvent* e)
+{
+    if (bDirty)
+    {
+         QMessageBox::StandardButton reply = QMessageBox::question(this,"Bookmarks","You recently updated your bookmarks list. Would you like to save your bookmarks?", QMessageBox::Yes | QMessageBox::No);
+         if (reply == QMessageBox::Yes)
+         {
+             OnSaveBookmarks();
+         }
+    }
+}
